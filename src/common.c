@@ -1,9 +1,21 @@
-#include "ft_malloc.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   common.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sjamie <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/08/08 17:53:58 by sjamie            #+#    #+#             */
+/*   Updated: 2021/08/08 17:54:01 by sjamie           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "sys_malloc.h"
 
 t_malloc_data	g_malloc_data = {
 		{NULL}, {NULL}, {NULL}, -1};
 
-void			*malloc(size_t size)
+void	*malloc(size_t size)
 {
 	if (g_malloc_data.pagesize == -1)
 		g_malloc_data.pagesize = getpagesize();
@@ -19,20 +31,19 @@ void			*malloc(size_t size)
 	{
 		return (alloc_as_large(size));
 	}
-	else {
+	else
 		return (NULL);
-	}
 }
 
-void			free(void *ptr)
+void	free(void *ptr)
 {
 	char	alloc_type;
-	char 	*tmp_arr;
+	char	*tmp_arr;
 
 	if (ptr == NULL)
 		return ;
 	ptr = ptr - 1;
-	tmp_arr = (char*)(ptr);
+	tmp_arr = (char *)(ptr);
 	alloc_type = tmp_arr[0];
 	if (alloc_type == TINE_CHAR)
 		free_as_tiny(ptr);
@@ -42,22 +53,22 @@ void			free(void *ptr)
 		free_as_large(ptr);
 }
 
-void			*realloc(void *ptr, size_t size)
+void	*realloc(void *ptr, size_t size)
 {
-    if (!ptr)
-        return (malloc(size));
-    if (size <= 0)
-    {
-        free(ptr);
-        return (NULL);
-    }
+	if (!ptr)
+		return (malloc(size));
+	if (size <= 0)
+	{
+		free(ptr);
+		return (NULL);
+	}
 	if (!can_free(ptr - 1))
 		return (NULL);
 	free(ptr);
 	return (malloc(size));
 }
 
-void			show_alloc_mem()
+void	show_alloc_mem(void)
 {
 	uint64_t	total;
 
@@ -70,8 +81,8 @@ void			show_alloc_mem()
 	ft_putstr(" bytes\n");
 }
 
-void			show_alloc_mem_ex(char type, uint32_t zone_number,
-								  size_t zone_print_size, uint32_t zone_wight_size)
+void	show_alloc_mem_ex(char type, uint32_t zone_number,
+						size_t zone_print_size, uint32_t zone_wight_size)
 {
 	if (zone_wight_size > 500)
 		zone_wight_size = 500;

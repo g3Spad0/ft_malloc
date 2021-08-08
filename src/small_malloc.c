@@ -1,6 +1,18 @@
-#include "ft_malloc.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   small_malloc.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sjamie <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/08/08 19:16:33 by sjamie            #+#    #+#             */
+/*   Updated: 2021/08/08 19:16:35 by sjamie           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-static	void 	small_alloc(t_small_box *box, int16_t size)
+#include "sys_malloc.h"
+
+static	void	small_alloc(t_small_box *box, int16_t size)
 {
 	int16_t			alloc_size;
 	int16_t			alloc_size_main;
@@ -25,7 +37,8 @@ static	bool	new_alloc(t_small_box *box)
 {
 	void	*user;
 
-	if ((user = default_mmap(g_malloc_data.pagesize * 3)) == MAP_FAILED)
+	user = default_mmap(g_malloc_data.pagesize * 3);
+	if (user == MAP_FAILED)
 		return (false);
 	ft_bzero(user, g_malloc_data.pagesize * 3);
 	if (g_malloc_data.small.user_start == NULL)
@@ -40,30 +53,15 @@ static	bool	new_alloc(t_small_box *box)
 	return (true);
 }
 
-static	bool	is_in_start(t_small_box *box, size_t size, void *user_pointer, void *curr_pointer)
-{
-	if (curr_pointer - SMALL_OFFSET == user_pointer)
-		return (false);
-	if (user_pointer + SMALL_OFFSET + size + SMALL_DATA_SIZE < curr_pointer)
-	{
-		box->user = user_pointer;
-		box->prev = NULL;
-		box->next = curr_pointer;
-		box->offset = SMALL_OFFSET;
-		return (true);
-	}
-	return (false);
-}
-
-static	bool	set_if_find_zone(t_small_box *box, size_t size, void *user_pointer)
+static	bool	set_if_find_zone(t_small_box *box, size_t size,
+								   void *user_pointer, void *tmp)
 {
 	void	*curr_pointer;
-	void	*tmp;
 	int16_t	curr_size;
 	bool	is_find;
 
 	memory_write(&curr_pointer, user_pointer + 8 + 2, 8);
-	if (is_in_start(box, size, user_pointer , curr_pointer))
+	if (is_in_start(box, size, user_pointer, curr_pointer))
 		return (true);
 	while (curr_pointer != NULL)
 	{
@@ -72,13 +70,11 @@ static	bool	set_if_find_zone(t_small_box *box, size_t size, void *user_pointer)
 		if (tmp != NULL)
 			is_find = (tmp - curr_size - curr_pointer) > size + SMALL_DATA_SIZE;
 		else
-			is_find = user_pointer + g_malloc_data.pagesize * 3 -
-					curr_size - curr_pointer > size + SMALL_DATA_SIZE;
+			is_find = user_pointer + g_malloc_data.pagesize * 3
+				- curr_size - curr_pointer > size + SMALL_DATA_SIZE;
 		if (is_find)
 		{
-			box->user = user_pointer;
-			box->prev = curr_pointer;
-			box->next = tmp;
+			set_norm(box, user_pointer, curr_pointer, tmp);
 			box->offset = curr_pointer + curr_size - user_pointer;
 			return (true);
 		}
@@ -90,13 +86,13 @@ static	bool	set_if_find_zone(t_small_box *box, size_t size, void *user_pointer)
 static	bool	find_free_zone(t_small_box *box, size_t size)
 {
 	uintptr_t	user_pointer_offset;
-	void 		*user_pointer;
+	void		*user_pointer;
 
 	user_pointer_offset = (uintptr_t) g_malloc_data.small.user_start;
 	while (true)
 	{
 		user_pointer = (NULL) + user_pointer_offset;
-		if (set_if_find_zone(box, size, user_pointer))
+		if (set_if_find_zone(box, size, user_pointer, NULL))
 			return (true);
 		if (user_pointer == g_malloc_data.small.user_end)
 			return (false);
@@ -104,7 +100,7 @@ static	bool	find_free_zone(t_small_box *box, size_t size)
 	}
 }
 
-void			*alloc_as_small(size_t size)
+void	*alloc_as_small(size_t size)
 {
 	t_small_box	box;
 

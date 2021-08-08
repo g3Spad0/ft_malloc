@@ -1,8 +1,20 @@
-#include "ft_malloc.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   large_malloc.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sjamie <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/08/08 17:57:46 by sjamie            #+#    #+#             */
+/*   Updated: 2021/08/08 17:57:47 by sjamie           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-size_t			get_large_offset()
+#include "sys_malloc.h"
+
+size_t	get_large_offset(void)
 {
-	return sizeof(t_large_data) + 1;
+	return (sizeof(t_large_data) + 1);
 }
 
 static	void	*alloc(t_large_data *data, size_t size)
@@ -12,22 +24,23 @@ static	void	*alloc(t_large_data *data, size_t size)
 
 	mmap_size = get_large_offset() + size;
 	if (mmap_size % g_malloc_data.pagesize != 0)
-	{
-		mmap_size = (mmap_size / g_malloc_data.pagesize + 1) * g_malloc_data.pagesize;
-	}
+		mmap_size = (mmap_size / g_malloc_data.pagesize + 1)
+			* g_malloc_data.pagesize;
 	data->mmap_size = mmap_size;
 	data->real_size = size;
-	if ((p = default_mmap(mmap_size)) == MAP_FAILED)
+	p = default_mmap(mmap_size);
+	if (p == MAP_FAILED)
 		return (NULL);
 	return (p);
 }
 
-void			*alloc_as_large(size_t size)
+void	*alloc_as_large(size_t size)
 {
 	t_large_data	data;
-	void 			*p;
+	void			*p;
 
-	if ((p = alloc(&data, size)) == NULL)
+	p = alloc(&data, size);
+	if (p == NULL)
 		return (NULL);
 	if (g_malloc_data.large.start == NULL)
 	{

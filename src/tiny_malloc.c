@@ -1,13 +1,25 @@
-#include "ft_malloc.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tiny_malloc.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sjamie <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/08/08 17:47:43 by sjamie            #+#    #+#             */
+/*   Updated: 2021/08/08 17:47:46 by sjamie           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-static	void 	tiny_alloc(t_tiny_box *box, size_t size)
+#include "sys_malloc.h"
+
+static	void	tiny_alloc(t_tiny_box *box, size_t size)
 {
-	size_t 	i;
-	char 	*arr;
+	size_t	i;
+	char	*arr;
 	int16_t	alloc_size;
 
 	i = 0;
-	arr = (char*)(box->sys);
+	arr = (char *)(box->sys);
 	while (i < size)
 	{
 		arr[i + box->offset] = BUSY_CHAR;
@@ -21,14 +33,13 @@ static	void 	tiny_alloc(t_tiny_box *box, size_t size)
 	box->user = box->user + box->offset + 1;
 }
 
-static	bool 	new_alloc(t_tiny_box *box)
+static	bool	new_alloc(t_tiny_box *box, void *user, void *sys)
 {
-	void	*user;
-	void	*sys;
-
-	if ((user = default_mmap(g_malloc_data.pagesize)) == MAP_FAILED)
+	user = default_mmap(g_malloc_data.pagesize);
+	if (user == MAP_FAILED)
 		return (false);
-	if ((sys = default_mmap(g_malloc_data.pagesize)) == MAP_FAILED)
+	sys = default_mmap(g_malloc_data.pagesize);
+	if (sys == MAP_FAILED)
 		return (false);
 	ft_bzero(sys, g_malloc_data.pagesize);
 	ft_bzero(user, g_malloc_data.pagesize);
@@ -50,14 +61,15 @@ static	bool 	new_alloc(t_tiny_box *box)
 	return (true);
 }
 
-static	bool	set_if_find_zone(t_tiny_box *box, size_t size, void *sys_pointer, void *user_pointer)
+static	bool	set_if_find_zone(t_tiny_box *box, size_t size,
+									void *sys_pointer, void *user_pointer)
 {
-	char 		*arr;
-	int 		i;
-	int 		j;
+	char		*arr;
+	int			i;
+	int			j;
 
 	i = TINY_OFFSET;
-	arr = (char*)sys_pointer;
+	arr = (char *)sys_pointer;
 	while (i < g_malloc_data.pagesize)
 	{
 		if (arr[i] == FREE_CHAR)
@@ -69,12 +81,8 @@ static	bool	set_if_find_zone(t_tiny_box *box, size_t size, void *sys_pointer, vo
 				++i;
 			}
 			if (j == size)
-			{
-				box->sys = sys_pointer;
-				box->user = user_pointer;
-				box->offset = i - j;
-				return (true);
-			}
+				return (tiny_malloc_norm(box, sys_pointer,
+						user_pointer, i - j));
 			--i;
 		}
 		++i;
@@ -85,9 +93,9 @@ static	bool	set_if_find_zone(t_tiny_box *box, size_t size, void *sys_pointer, vo
 static	bool	find_free_zone(t_tiny_box *box, size_t size)
 {
 	uintptr_t	sys_pointer_offset;
-	void 		*sys_pointer;
+	void		*sys_pointer;
 	uintptr_t	user_pointer_offset;
-	void 		*user_pointer;
+	void		*user_pointer;
 
 	sys_pointer_offset = (uintptr_t) g_malloc_data.tiny.sys_start;
 	user_pointer_offset = (uintptr_t) g_malloc_data.tiny.user_start;
@@ -104,14 +112,14 @@ static	bool	find_free_zone(t_tiny_box *box, size_t size)
 	}
 }
 
-void			*alloc_as_tiny(size_t size)
+void	*alloc_as_tiny(size_t size)
 {
 	t_tiny_box	box;
 
 	size += 1;
 	if (g_malloc_data.tiny.user_start == NULL)
 	{
-		if (!new_alloc(&box))
+		if (!new_alloc(&box, NULL, NULL))
 			return (NULL);
 		tiny_alloc(&box, size);
 	}
@@ -119,7 +127,7 @@ void			*alloc_as_tiny(size_t size)
 	{
 		if (!find_free_zone(&box, size))
 		{
-			if (!new_alloc(&box))
+			if (!new_alloc(&box, NULL, NULL))
 				return (NULL);
 		}
 		tiny_alloc(&box, size);

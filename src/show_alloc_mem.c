@@ -1,15 +1,25 @@
-#include "ft_malloc.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   show_alloc_mem.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sjamie <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/08/08 18:04:47 by sjamie            #+#    #+#             */
+/*   Updated: 2021/08/08 18:04:48 by sjamie           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-static	uint64_t	items_tiny_return_total(void *sys_pointer, void *user_pointer)
+#include "sys_malloc.h"
+
+static	uint64_t	items_tiny_return_total(void *sys_pointer,
+											  void *user_pointer,
+											  int i, uint64_t total)
 {
-	char 		*arr;
-	int 		i;
-	int 		j;
-	uint64_t	total;
+	char		*arr;
+	int			j;
 
-	i = TINY_OFFSET;
-	arr = (char*)sys_pointer;
-	total = 0;
+	arr = (char *)sys_pointer;
 	while (i < g_malloc_data.pagesize)
 	{
 		if (arr[i] == BUSY_CHAR)
@@ -24,7 +34,7 @@ static	uint64_t	items_tiny_return_total(void *sys_pointer, void *user_pointer)
 			ft_putstr(" - ");
 			print_address(user_pointer + i + j);
 			ft_putstr(" : ");
-			print_uint64_t((uint64_t) (j - 1));
+			print_uint64_t((uint64_t)(j - 1));
 			ft_putstr(" bytes\n");
 			i = j + i - 1;
 		}
@@ -33,12 +43,12 @@ static	uint64_t	items_tiny_return_total(void *sys_pointer, void *user_pointer)
 	return (total);
 }
 
-uint64_t			print_tiny_return_total()
+uint64_t	print_tiny_return_total(void)
 {
 	uintptr_t	sys_pointer_offset;
-	void 		*sys_pointer;
+	void		*sys_pointer;
 	uintptr_t	user_pointer_offset;
-	void 		*user_pointer;
+	void		*user_pointer;
 	uint64_t	total;
 
 	sys_pointer_offset = (uintptr_t) g_malloc_data.tiny.sys_start;
@@ -51,7 +61,8 @@ uint64_t			print_tiny_return_total()
 		ft_putstr("TINY : ");
 		print_address(user_pointer);
 		ft_putstr("\n");
-		total += items_tiny_return_total(sys_pointer, user_pointer);
+		total += items_tiny_return_total(sys_pointer, user_pointer,
+				TINY_OFFSET, (uint64_t)0);
 		if (sys_pointer == g_malloc_data.tiny.sys_end)
 			break ;
 		memory_write(&sys_pointer_offset, sys_pointer, 8);
@@ -62,9 +73,9 @@ uint64_t			print_tiny_return_total()
 
 static	uint64_t	items_small_return_total(void *user_pointer)
 {
-	void	*curr_pointer;
-	void	*next;
-	int16_t	curr_size;
+	void		*curr_pointer;
+	void		*next;
+	int16_t		curr_size;
 	uint64_t	total;
 
 	total = 0;
@@ -77,7 +88,7 @@ static	uint64_t	items_small_return_total(void *user_pointer)
 		ft_putstr(" - ");
 		print_address(curr_pointer + curr_size - SMALL_DATA_SIZE);
 		ft_putstr(" : ");
-		print_uint64_t((uint64_t) (curr_size - SMALL_DATA_SIZE));
+		print_uint64_t((uint64_t)(curr_size - SMALL_DATA_SIZE));
 		ft_putstr(" bytes\n");
 		total += curr_size - SMALL_DATA_SIZE;
 		curr_pointer = next;
@@ -85,10 +96,10 @@ static	uint64_t	items_small_return_total(void *user_pointer)
 	return (total);
 }
 
-uint64_t			print_small_return_total()
+uint64_t	print_small_return_total(void)
 {
 	uintptr_t	user_pointer_offset;
-	void 		*user_pointer;
+	void		*user_pointer;
 	uint64_t	total;
 
 	user_pointer_offset = (uintptr_t) g_malloc_data.small.user_start;
@@ -107,7 +118,7 @@ uint64_t			print_small_return_total()
 	return (total);
 }
 
-uint64_t			print_large_return_total()
+uint64_t	print_large_return_total(void)
 {
 	t_large_data	*data;
 	uint64_t		total;

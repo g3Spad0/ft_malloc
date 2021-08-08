@@ -1,6 +1,18 @@
-#include "ft_malloc.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   large_free.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sjamie <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/08/08 17:57:22 by sjamie            #+#    #+#             */
+/*   Updated: 2021/08/08 17:57:24 by sjamie           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-void			free_as_large(void *ptr)
+#include "sys_malloc.h"
+
+void	free_as_large(void *ptr)
 {
 	t_large_data	data;
 
@@ -24,5 +36,6 @@ void			free_as_large(void *ptr)
 		data.next->prev = data.prev;
 		data.prev->next = data.next;
 	}
+	add_prompt(FREE_DONE_CHAR, ptr + sizeof(t_large_data));
 	munmap(ptr, data.mmap_size);
 }

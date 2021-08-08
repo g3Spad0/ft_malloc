@@ -17,7 +17,7 @@
 # include <unistd.h>
 # include <stdlib.h>
 
-typedef	struct		s_list
+typedef struct		s_list
 {
 	void			*content;
 	size_t			content_size;

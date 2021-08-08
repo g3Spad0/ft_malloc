@@ -1,10 +1,22 @@
-#include "ft_malloc.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sjamie <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/08/08 17:43:08 by sjamie            #+#    #+#             */
+/*   Updated: 2021/08/08 17:43:12 by sjamie           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-void			memory_write(void *dst, void *src, int size)
+#include "sys_malloc.h"
+
+void	memory_write(void *dst, void *src, int size)
 {
 	int		i;
 	char	*c_dst;
-	char 	*c_src;
+	char	*c_src;
 
 	c_dst = (char *)dst;
 	c_src = (char *)src;
@@ -16,15 +28,15 @@ void			memory_write(void *dst, void *src, int size)
 	}
 }
 
-void 		add_prompt(char type, void *src)
+void	add_prompt(char type, void *src)
 {
-	char 	*c_src;
+	char	*c_src;
 
 	c_src = (char *)src;
 	c_src[0] = type;
 }
 
-int			can_free(void *src)
+int	can_free(void *src)
 {
 	char	*c_src;
 	char	c;
@@ -34,8 +46,8 @@ int			can_free(void *src)
 	return (c == TINE_CHAR || c == SMALL_CHAR || c == LARGE_CHAR);
 }
 
-void 		*default_mmap(size_t size)
+void	*default_mmap(size_t size)
 {
-	return mmap(0, size, PROT_READ | PROT_WRITE, \
-			MAP_ANON | MAP_PRIVATE, -1, 0);
+	return (mmap(0, size, PROT_READ | PROT_WRITE, \
+			MAP_ANON | MAP_PRIVATE, -1, 0));
 }
