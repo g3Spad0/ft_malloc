@@ -39,12 +39,12 @@ static	void	free_memory_in_block_norm(t_pair *data, void *old_sys_pointer,
 	munmap(data->user_pointer, g_malloc_data.pagesize);
 }
 
-static	int16_t	free_and_return_size(void *sys_pointer, void *ptr)
+static	int16_t	free_and_return_size(void *sys_pointer, int16_t	i)
 {
-	int16_t	i;
 	char	*tmp_arr;
+	int16_t	tmp;
 
-	i = (int16_t)(ptr - sys_pointer);
+	tmp = i;
 	tmp_arr = (char *) sys_pointer;
 	while (tmp_arr[i] == BUSY_CHAR)
 	{
@@ -53,7 +53,7 @@ static	int16_t	free_and_return_size(void *sys_pointer, void *ptr)
 	}
 	tmp_arr[i] = FREE_CHAR;
 	++i;
-	return (i);
+	return (i - tmp);
 }
 
 static	void	free_memory_in_block(t_pair *data, void *old_sys_pointer,
@@ -62,16 +62,16 @@ static	void	free_memory_in_block(t_pair *data, void *old_sys_pointer,
 	int16_t	alloc_size;
 
 	add_prompt(FREE_DONE_CHAR, ptr);
-	memory_write(data->user_pointer + 8, &alloc_size, 2);
-	alloc_size -= free_and_return_size(data->sys_pointer, ptr);
 	memory_write(&alloc_size, data->user_pointer + 8, 2);
+	alloc_size -= free_and_return_size(data->sys_pointer, (int16_t) (ptr - data->user_pointer));
+	memory_write(data->user_pointer + 8, &alloc_size, 2);
 	if (alloc_size == 0)
 	{
 		free_memory_in_block_norm(data, old_sys_pointer, old_user_pointer);
 	}
 }
 
-void	*free_as_tiny(void *ptr)
+void	free_as_tiny(void *ptr)
 {
 	uintptr_t	sys_pointer_offset;
 	uintptr_t	user_pointer_offset;
@@ -89,10 +89,10 @@ void	*free_as_tiny(void *ptr)
 		data.user_pointer = (NULL) + user_pointer_offset;
 		if (ptr > data.user_pointer && ptr
 			< data.user_pointer + g_malloc_data.pagesize)
-			free_memory_in_block(&data,
+			return free_memory_in_block(&data,
 				old_sys_pointer, old_user_pointer, ptr);
 		if (data.sys_pointer == g_malloc_data.tiny.sys_end)
-			return (false);
+			return ;
 		memory_write(&sys_pointer_offset, data.sys_pointer, 8);
 		memory_write(&user_pointer_offset, data.user_pointer, 8);
 		old_sys_pointer = data.sys_pointer;

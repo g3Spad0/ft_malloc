@@ -42,6 +42,10 @@ void	free(void *ptr)
 
 	if (ptr == NULL)
 		return ;
+	if (!can_free_pointer(ptr))
+		return ;
+	if (!can_free(ptr - 1))
+		return ;
 	ptr = ptr - 1;
 	tmp_arr = (char *)(ptr);
 	alloc_type = tmp_arr[0];
@@ -61,7 +65,7 @@ void	*realloc(void *ptr, size_t size)
 	{
 		free(ptr);
 		return (NULL);
-	}
+	}// TODO
 	if (!can_free(ptr - 1))
 		return (NULL);
 	free(ptr);

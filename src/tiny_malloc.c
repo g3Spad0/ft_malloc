@@ -56,8 +56,8 @@ static	bool	new_alloc(t_tiny_box *box, void *user, void *sys)
 	g_malloc_data.tiny.sys_end = sys;
 	g_malloc_data.tiny.user_end = user;
 	box->offset = TINY_OFFSET;
-	box->user = g_malloc_data.tiny.user_start;
-	box->sys = g_malloc_data.tiny.sys_start;
+	box->user = user;
+	box->sys = sys;
 	return (true);
 }
 

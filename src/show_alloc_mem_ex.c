@@ -68,6 +68,7 @@ void	print_zones_tiny(uint32_t zone_number, size_t zone_print_size,
 			break ;
 		memory_write(&sys_pointer_offset, sys_pointer, 8);
 		memory_write(&user_pointer_offset, user_pointer, 8);
+		++curr_number;
 	}
 }
 
@@ -92,6 +93,7 @@ void	print_zones_small(uint32_t zone_number, size_t zone_print_size,
 		if (user_pointer == g_malloc_data.small.user_end)
 			break ;
 		memory_write(&user_pointer_offset, user_pointer, 8);
+		++curr_number;
 	}
 	ft_putstr("zone not found\n");
 }
@@ -113,6 +115,7 @@ void	print_zones_large(uint32_t zone_number, size_t zone_print_size,
 			return ;
 		}
 		data = data->next;
+		++curr_number;
 	}
 	ft_putstr("zone not found\n");
 }

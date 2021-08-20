@@ -129,7 +129,7 @@ void						*alloc_as_tiny(size_t size);
 void						memory_write(void *dst, void *src, int size);
 void						add_prompt(char type, void *src);
 void						*default_mmap(size_t size);
-void						*free_as_tiny(void *ptr);
+void						free_as_tiny(void *ptr);
 void						*alloc_as_large(size_t size);
 void						free_as_large(void *ptr);
 size_t						get_large_offset(void);
@@ -151,6 +151,7 @@ void						print_zones_large(uint32_t zone_number,
 void						print_address(void *ptr);
 void						print_uint64_t(uint64_t n);
 void						print_char_as_hex(char c);
+bool						can_free_pointer(void *ptr);
 
 extern t_malloc_data	g_malloc_data;
 

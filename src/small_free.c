@@ -11,6 +11,9 @@
 /* ************************************************************************** */
 
 #include "sys_malloc.h"
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <unistd.h>
 
 static	void	final_free_norm(void *next, t_small_norm *data)
 {
