@@ -33,14 +33,14 @@ static	void	tiny_alloc(t_tiny_box *box, size_t size)
 	box->user = box->user + box->offset + 1;
 }
 
-static	bool	new_alloc(t_tiny_box *box, void *user, void *sys)
+static	t_bool	new_alloc(t_tiny_box *box, void *user, void *sys)
 {
 	user = default_mmap(g_malloc_data.pagesize);
 	if (user == MAP_FAILED)
-		return (false);
+		return (FALSE);
 	sys = default_mmap(g_malloc_data.pagesize);
 	if (sys == MAP_FAILED)
-		return (false);
+		return (FALSE);
 	ft_bzero(sys, g_malloc_data.pagesize);
 	ft_bzero(user, g_malloc_data.pagesize);
 	if (g_malloc_data.tiny.user_start == NULL)
@@ -58,15 +58,15 @@ static	bool	new_alloc(t_tiny_box *box, void *user, void *sys)
 	box->offset = TINY_OFFSET;
 	box->user = user;
 	box->sys = sys;
-	return (true);
+	return (TRUE);
 }
 
-static	bool	set_if_find_zone(t_tiny_box *box, size_t size,
-									void *sys_pointer, void *user_pointer)
+static	t_bool	set_if_find_zone(t_tiny_box *box, size_t size,
+									 void *sys_pointer, void *user_pointer)
 {
 	char		*arr;
 	int			i;
-	int			j;
+	size_t		j;
 
 	i = TINY_OFFSET;
 	arr = (char *)sys_pointer;
@@ -87,10 +87,10 @@ static	bool	set_if_find_zone(t_tiny_box *box, size_t size,
 		}
 		++i;
 	}
-	return (false);
+	return (FALSE);
 }
 
-static	bool	find_free_zone(t_tiny_box *box, size_t size)
+static	t_bool	find_free_zone(t_tiny_box *box, size_t size)
 {
 	uintptr_t	sys_pointer_offset;
 	void		*sys_pointer;
@@ -99,14 +99,14 @@ static	bool	find_free_zone(t_tiny_box *box, size_t size)
 
 	sys_pointer_offset = (uintptr_t) g_malloc_data.tiny.sys_start;
 	user_pointer_offset = (uintptr_t) g_malloc_data.tiny.user_start;
-	while (true)
+	while (TRUE)
 	{
-		sys_pointer = (NULL) + sys_pointer_offset;
-		user_pointer = (NULL) + user_pointer_offset;
+		sys_pointer = (void *)sys_pointer_offset;
+		user_pointer = (void *)user_pointer_offset;
 		if (set_if_find_zone(box, size, sys_pointer, user_pointer))
-			return (true);
+			return (TRUE);
 		if (sys_pointer == g_malloc_data.tiny.sys_end)
-			return (false);
+			return (FALSE);
 		memory_write(&sys_pointer_offset, sys_pointer, 8);
 		memory_write(&user_pointer_offset, user_pointer, 8);
 	}

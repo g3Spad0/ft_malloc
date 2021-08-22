@@ -11,22 +11,61 @@
 /* ************************************************************************** */
 
 #include "sys_malloc.h"
-#include <stdio.h>
+
+static	char	to_sixteenfold(char c)
+{
+	if (c >= 10)
+	{
+		return (c + 87);
+	}
+	else
+	{
+		return (c + 48);
+	}
+}
+
+static	void	ft_sixteenfold(size_t num, char *rew)
+{
+	char	arr[16];
+	size_t	i;
+	size_t	j;
+
+	i = 0;
+	j = 0;
+	if (!num)
+		arr[i++] = 48;
+	while (num)
+	{
+		arr[i++] = to_sixteenfold((char)(num % 16));
+		num /= 16;
+	}
+	while (i)
+		rew[j++] = arr[--i];
+	rew[j] = 0;
+}
 
 void	print_address(void *ptr)
 {
 	char	arr[100];
 
-	sprintf(arr, "%p", ptr);
-	ft_putstr(arr);
+	if (ptr == NULL)
+	{
+		ft_putstr("(null)");
+	}
+	else
+	{
+		ft_sixteenfold((size_t)ptr, arr);
+		ft_putstr("0X0");
+		ft_putstr(arr);
+	}
 }
 
 void	print_char_as_hex(char c)
 {
 	char	arr[100];
 
-	sprintf(arr, "%02X", c);
-	write(1, arr, 2);
+	ft_sixteenfold(c, arr);
+	ft_putstr(arr);
 }
 
 void	print_uint64_t(uint64_t n)

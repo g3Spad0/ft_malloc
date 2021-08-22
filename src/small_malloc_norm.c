@@ -12,20 +12,20 @@
 
 #include "sys_malloc.h"
 
-bool	is_in_start(t_small_box *box, size_t size,
+t_bool	is_in_start(t_small_box *box, size_t size,
 							  void *user_pointer, void *curr_pointer)
 {
 	if (curr_pointer - SMALL_OFFSET == user_pointer)
-		return (false);
-	if (user_pointer + SMALL_OFFSET + size + SMALL_DATA_SIZE < curr_pointer)
+		return (FALSE);
+	if (user_pointer + SMALL_OFFSET + size + S_D_S < curr_pointer)
 	{
 		box->user = user_pointer;
 		box->prev = NULL;
 		box->next = curr_pointer;
 		box->offset = SMALL_OFFSET;
-		return (true);
+		return (TRUE);
 	}
-	return (false);
+	return (FALSE);
 }
 
 void	set_norm(t_small_box *box, void *user_pointer,
@@ -36,11 +36,11 @@ void	set_norm(t_small_box *box, void *user_pointer,
 	box->next = tmp;
 }
 
-bool	tiny_malloc_norm(t_tiny_box *box, void *sys_pointer,
+t_bool	tiny_malloc_norm(t_tiny_box *box, void *sys_pointer,
 						 void *user_pointer, int v)
 {
 	box->sys = sys_pointer;
 	box->user = user_pointer;
 	box->offset = v;
-	return (true);
+	return (TRUE);
 }

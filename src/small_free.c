@@ -97,7 +97,7 @@ void	free_as_small(void *ptr)
 	old_user_pointer = NULL;
 	while (user_pointer_offset != 0)
 	{
-		user_pointer = (NULL) + user_pointer_offset;
+		user_pointer = (void *)user_pointer_offset;
 		if (user_pointer < ptr
 			&& user_pointer + g_malloc_data.pagesize * 3 > ptr)
 		{

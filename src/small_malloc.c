@@ -22,24 +22,24 @@ static	void	small_alloc(t_small_box *box, int16_t size)
 	memory_write(box->user + box->offset, &box->next, 8);
 	if (box->prev != NULL)
 		memory_write(box->prev, &curr_user_pointer, 8);
-	alloc_size = size + SMALL_DATA_SIZE;
+	alloc_size = size + S_D_S;
 	memory_write(curr_user_pointer + 8, &alloc_size, 2);
 	add_prompt(SMALL_CHAR, curr_user_pointer + 8 + 2);
 	if (box->prev == NULL)
 		memory_write(box->user + 8 + 2, &curr_user_pointer, 8);
-	box->user_offset = box->offset + SMALL_DATA_SIZE;
+	box->user_offset = box->offset + S_D_S;
 	memory_write(&alloc_size_main, box->user + 8, 2);
 	alloc_size_main += alloc_size;
 	memory_write(box->user + 8, &alloc_size_main, 2);
 }
 
-static	bool	new_alloc(t_small_box *box)
+static	t_bool	new_alloc(t_small_box *box)
 {
 	void	*user;
 
 	user = default_mmap(g_malloc_data.pagesize * 3);
 	if (user == MAP_FAILED)
-		return (false);
+		return (FALSE);
 	ft_bzero(user, g_malloc_data.pagesize * 3);
 	if (g_malloc_data.small.user_start == NULL)
 		g_malloc_data.small.user_start = user;
@@ -50,52 +50,52 @@ static	bool	new_alloc(t_small_box *box)
 	box->prev = NULL;
 	box->next = NULL;
 	box->offset = SMALL_OFFSET;
-	return (true);
+	return (TRUE);
 }
 
-static	bool	set_if_find_zone(t_small_box *box, size_t size,
-								   void *user_pointer, void *tmp)
+static	t_bool	set_if_find_zone(t_small_box *box, size_t size,
+									 void *user_pointer, void *tmp)
 {
-	void	*curr_pointer;
-	int16_t	curr_size;
-	bool	is_find;
+	void		*curr_pointer;
+	uint16_t	curr_size;
+	t_bool		is_find;
 
 	memory_write(&curr_pointer, user_pointer + 8 + 2, 8);
 	if (is_in_start(box, size, user_pointer, curr_pointer))
-		return (true);
+		return (TRUE);
 	while (curr_pointer != NULL)
 	{
 		memory_write(&tmp, curr_pointer, 8);
 		memory_write(&curr_size, curr_pointer + 8, 2);
 		if (tmp != NULL)
-			is_find = (tmp - curr_size - curr_pointer) > size + SMALL_DATA_SIZE;
+			is_find = tmp - curr_size - curr_pointer > to_ll(size + S_D_S);
 		else
 			is_find = user_pointer + g_malloc_data.pagesize * 3
-				- curr_size - curr_pointer > size + SMALL_DATA_SIZE;
+				- curr_size - curr_pointer > to_ll(size + S_D_S);
 		if (is_find)
 		{
 			set_norm(box, user_pointer, curr_pointer, tmp);
 			box->offset = curr_pointer + curr_size - user_pointer;
-			return (true);
+			return (TRUE);
 		}
 		curr_pointer = tmp;
 	}
-	return (false);
+	return (FALSE);
 }
 
-static	bool	find_free_zone(t_small_box *box, size_t size)
+static	t_bool	find_free_zone(t_small_box *box, size_t size)
 {
 	uintptr_t	user_pointer_offset;
 	void		*user_pointer;
 
 	user_pointer_offset = (uintptr_t) g_malloc_data.small.user_start;
-	while (true)
+	while (TRUE)
 	{
-		user_pointer = (NULL) + user_pointer_offset;
+		user_pointer = (void *)user_pointer_offset;
 		if (set_if_find_zone(box, size, user_pointer, NULL))
-			return (true);
+			return (TRUE);
 		if (user_pointer == g_malloc_data.small.user_end)
-			return (false);
+			return (FALSE);
 		memory_write(&user_pointer_offset, user_pointer, 8);
 	}
 }

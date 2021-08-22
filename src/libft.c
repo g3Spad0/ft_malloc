@@ -1,31 +1,42 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strncpy.c                                       :+:      :+:    :+:   */
+/*   large_malloc.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sjamie <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/09/10 21:14:51 by sjamie            #+#    #+#             */
-/*   Updated: 2019/09/10 21:14:53 by sjamie           ###   ########.fr       */
+/*   Created: 2021/08/08 17:57:46 by sjamie            #+#    #+#             */
+/*   Updated: 2021/08/08 17:57:47 by sjamie           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "sys_malloc.h"
 
-char	*ft_strncpy(char *dst, const char *src, size_t len)
+void	ft_bzero(void *s, size_t n)
 {
-	size_t	i;
+	char	*str;
 
+	str = s;
+	while (n--)
+	{
+		*str = '\0';
+		str++;
+	}
+}
+
+void	ft_putchar(char c)
+{
+	write(1, &c, 1);
+}
+
+void	ft_putstr(char const *s)
+{
+	int	i;
+
+	if (!s)
+		return ;
 	i = 0;
-	while (i < len && src[i] != '\0')
-	{
-		dst[i] = src[i];
+	while (s[i])
 		i++;
-	}
-	while (i < len)
-	{
-		dst[i] = '\0';
-		i++;
-	}
-	return (dst);
+	write(1, s, i);
 }

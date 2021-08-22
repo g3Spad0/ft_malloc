@@ -68,7 +68,6 @@ void 	*arr[81];
 	malloc(120);
 
 //	show_alloc_mem();
-	write(1, "-------------\n\n\n\n", strlen("-------------\n\n\n\n"));
 //
 //
 //	for (int i = 24; i < 100; ++i) {

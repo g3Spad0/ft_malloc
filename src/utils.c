@@ -51,3 +51,28 @@ void	*default_mmap(size_t size)
 	return (mmap(0, size, PROT_READ | PROT_WRITE, \
 			MAP_ANON | MAP_PRIVATE, -1, 0));
 }
+
+void	start_free(void *ptr, t_bool check_valid)
+{
+	char	alloc_type;
+	char	*tmp_arr;
+
+	if (ptr == NULL)
+		return ;
+	if (check_valid)
+	{
+		if (!can_free_pointer(ptr))
+			return ;
+		if (!can_free(ptr - 1))
+			return ;
+	}
+	ptr = ptr - 1;
+	tmp_arr = (char *)(ptr);
+	alloc_type = tmp_arr[0];
+	if (alloc_type == TINE_CHAR)
+		free_as_tiny(ptr);
+	else if (alloc_type == SMALL_CHAR)
+		free_as_small(ptr);
+	else if (alloc_type == LARGE_CHAR)
+		free_as_large(ptr);
+}

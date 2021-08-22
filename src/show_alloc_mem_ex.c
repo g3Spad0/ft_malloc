@@ -56,8 +56,8 @@ void	print_zones_tiny(uint32_t zone_number, size_t zone_print_size,
 	user_pointer_offset = (uintptr_t) g_malloc_data.tiny.user_start;
 	while (user_pointer_offset != 0)
 	{
-		sys_pointer = (NULL) + sys_pointer_offset;
-		user_pointer = (NULL) + user_pointer_offset;
+		sys_pointer = (void *)sys_pointer_offset;
+		user_pointer = (void *)user_pointer_offset;
 		if (curr_number == zone_number)
 		{
 			print_zone_norm(zone_print_size, zone_wight_size,
@@ -83,7 +83,7 @@ void	print_zones_small(uint32_t zone_number, size_t zone_print_size,
 	user_pointer_offset = (uintptr_t) g_malloc_data.small.user_start;
 	while (user_pointer_offset != 0)
 	{
-		user_pointer = (NULL) + user_pointer_offset;
+		user_pointer = (void *)user_pointer_offset;
 		if (curr_number == zone_number)
 		{
 			print_zone(zone_print_size, zone_wight_size,

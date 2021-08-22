@@ -56,8 +56,8 @@ uint64_t	print_tiny_return_total(void)
 	total = 0;
 	while (user_pointer_offset != 0)
 	{
-		sys_pointer = (NULL) + sys_pointer_offset;
-		user_pointer = (NULL) + user_pointer_offset;
+		sys_pointer = (void *)sys_pointer_offset;
+		user_pointer = (void *)user_pointer_offset;
 		ft_putstr("TINY : ");
 		print_address(user_pointer);
 		ft_putstr("\n");
@@ -84,13 +84,13 @@ static	uint64_t	items_small_return_total(void *user_pointer)
 	{
 		memory_write(&next, curr_pointer, 8);
 		memory_write(&curr_size, curr_pointer + 8, 2);
-		print_address(curr_pointer + SMALL_DATA_SIZE);
+		print_address(curr_pointer + S_D_S);
 		ft_putstr(" - ");
-		print_address(curr_pointer + curr_size - SMALL_DATA_SIZE);
+		print_address(curr_pointer + curr_size - S_D_S);
 		ft_putstr(" : ");
-		print_uint64_t((uint64_t)(curr_size - SMALL_DATA_SIZE));
+		print_uint64_t((uint64_t)(curr_size - S_D_S));
 		ft_putstr(" bytes\n");
-		total += curr_size - SMALL_DATA_SIZE;
+		total += curr_size - S_D_S;
 		curr_pointer = next;
 	}
 	return (total);
@@ -106,7 +106,7 @@ uint64_t	print_small_return_total(void)
 	total = 0;
 	while (user_pointer_offset != 0)
 	{
-		user_pointer = (NULL) + user_pointer_offset;
+		user_pointer = (void *)user_pointer_offset;
 		ft_putstr("SMALL : ");
 		print_address(user_pointer);
 		ft_putstr("\n");

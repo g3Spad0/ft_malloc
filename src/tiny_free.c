@@ -63,7 +63,8 @@ static	void	free_memory_in_block(t_pair *data, void *old_sys_pointer,
 
 	add_prompt(FREE_DONE_CHAR, ptr);
 	memory_write(&alloc_size, data->user_pointer + 8, 2);
-	alloc_size -= free_and_return_size(data->sys_pointer, (int16_t) (ptr - data->user_pointer));
+	alloc_size -= free_and_return_size(data->sys_pointer,
+			(int16_t)(ptr - data->user_pointer));
 	memory_write(data->user_pointer + 8, &alloc_size, 2);
 	if (alloc_size == 0)
 	{
@@ -85,12 +86,12 @@ void	free_as_tiny(void *ptr)
 	old_user_pointer = NULL;
 	while (user_pointer_offset != 0)
 	{
-		data.sys_pointer = (NULL) + sys_pointer_offset;
-		data.user_pointer = (NULL) + user_pointer_offset;
+		data.sys_pointer = (void *)sys_pointer_offset;
+		data.user_pointer = (void *)user_pointer_offset;
 		if (ptr > data.user_pointer && ptr
 			< data.user_pointer + g_malloc_data.pagesize)
-			return free_memory_in_block(&data,
-				old_sys_pointer, old_user_pointer, ptr);
+			return (free_memory_in_block(&data,
+					old_sys_pointer, old_user_pointer, ptr));
 		if (data.sys_pointer == g_malloc_data.tiny.sys_end)
 			return ;
 		memory_write(&sys_pointer_offset, data.sys_pointer, 8);
