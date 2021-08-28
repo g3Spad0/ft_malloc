@@ -162,5 +162,7 @@ void						ft_putchar(char c);
 void						ft_putstr(char const *s);
 void						start_free(void *ptr, t_bool check_valid);
 long long					to_ll(size_t size);
+void						*start_realloc(void *ptr, size_t size);
+size_t						ft_min(size_t first, size_t second);
 
 #endif

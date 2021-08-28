@@ -40,3 +40,15 @@ void	ft_putstr(char const *s)
 		i++;
 	write(1, s, i);
 }
+
+size_t	ft_min(size_t first, size_t second)
+{
+	if (first > second)
+	{
+		return second;
+	}
+	else
+	{
+		return first;
+	}
+}

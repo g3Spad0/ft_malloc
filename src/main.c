@@ -52,29 +52,31 @@ int main() {
 #include <stdio.h>
 // LARGE
 
-void 	*arr[81];
-
-	for (int i = 0; i < 12; ++i) {
-
-		arr[i] = malloc(1000);
-	}
-
-	//free(arr[11]);
-
-	show_alloc_mem();
-
-	free(arr[10]);
-	free(arr[11]);
-	malloc(120);
-
+//void 	*arr[81];
+//
+//	for (int i = 0; i < 12; ++i) {
+//
+//		arr[i] = malloc(1000);
+//	}
+//
+//	//free(arr[11]);
+//
 //	show_alloc_mem();
 //
+//	free(arr[10]);
+//	free(arr[11]);
+//	malloc(120);
 //
-//	for (int i = 24; i < 100; ++i) {
-//		free(arr[i]);
-//	}
+////	show_alloc_mem();
+////
+////
+////	for (int i = 24; i < 100; ++i) {
+////		free(arr[i]);
+////	}
+//
+//	show_alloc_mem();
 
-	show_alloc_mem();
+malloc(1);
 
 return 0;
 }

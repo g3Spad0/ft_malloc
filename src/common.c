@@ -51,8 +51,7 @@ void	*realloc(void *ptr, size_t size)
 	}
 	if (!can_free_pointer(ptr) || !can_free(ptr - 1))
 		return (NULL);
-	start_free(ptr, FALSE);
-	return (malloc(size));
+	return (start_realloc(ptr, size));
 }
 
 void	show_alloc_mem(void)
