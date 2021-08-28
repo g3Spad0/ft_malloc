@@ -27,7 +27,7 @@ void	*malloc(size_t size)
 	{
 		return (alloc_as_small(size));
 	}
-	else if (size >= LARGE_SIZE_START)
+	else if (size >= LARGE_SIZE_START && size <= LARGE_SIZE_END)
 	{
 		return (alloc_as_large(size));
 	}

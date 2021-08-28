@@ -25,17 +25,20 @@ static	void	copy_as_small(void *ptr, void *new_ptr, size_t size)
 	uint16_t	curr_size;
 
 	memory_write(&curr_size, ptr - 2 - 1, 2);
+	curr_size -= 1 + 8 + 2;
 	memory_write(new_ptr, ptr, (int) ft_min(size, curr_size));
 }
 
 static	void	tiny_copy(t_pair *data, void *ptr, void *new_ptr, size_t size)
 {
 	size_t	i;
+	size_t	offset;
 	char	*arr;
 
 	arr = (char *)data->sys_pointer;
-	i = (size_t) (ptr - data->user_pointer);
-	while (arr[i] == BUSY_CHAR)
+	offset = (size_t)(ptr - data->user_pointer);
+	i = 0;
+	while (arr[i + offset] == BUSY_CHAR)
 		++i;
 	++i;
 	memory_write(new_ptr, ptr, (int) ft_min(size, i));
@@ -54,7 +57,7 @@ static	void	copy_as_tiny(void *ptr, void *new_ptr, size_t size)
 		data.sys_pointer = (void *)sys_pointer_offset;
 		data.user_pointer = (void *)user_pointer_offset;
 		if (ptr > data.user_pointer && ptr
-		< data.user_pointer + g_malloc_data.pagesize)
+			< data.user_pointer + g_malloc_data.pagesize)
 			return (tiny_copy(&data, ptr, new_ptr, size));
 		if (data.sys_pointer == g_malloc_data.tiny.sys_end)
 			return ;
@@ -84,4 +87,3 @@ void	*start_realloc(void *ptr, size_t size)
 	start_free(ptr, FALSE);
 	return (new_ptr);
 }
-

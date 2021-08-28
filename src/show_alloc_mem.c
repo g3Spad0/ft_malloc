@@ -29,7 +29,7 @@ static	uint64_t	items_tiny_return_total(void *sys_pointer,
 				++j;
 			if (arr[j + i] == END_CHAR)
 				j += 1;
-			total += j;
+			total += j - 1;
 			print_address(user_pointer + i + 1);
 			ft_putstr(" - ");
 			print_address(user_pointer + i + j);

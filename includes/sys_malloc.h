@@ -28,7 +28,7 @@
 # define SMALL_CHAR			'S'
 
 # define LARGE_SIZE_START	4097
-# define LARGE_SIZE_END		65535
+# define LARGE_SIZE_END		1000000000
 # define LARGE_CHAR			'L'
 
 # define FREE_DONE_CHAR		'D'

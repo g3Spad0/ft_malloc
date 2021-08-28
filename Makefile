@@ -14,44 +14,54 @@ ifeq ($(HOSTTYPE),)
 	HOSTTYPE := $(shell uname -m)_$(shell uname -s)
 endif
 
-NAME = libft_malloc_$(HOSTTYPE).so
-LINK = libft_malloc.so
 
-DIR  = ./src/
-SRC  = $(DIR)check_pointer.c \
-       $(DIR)common.c \
-       $(DIR)large_free.c \
-       $(DIR)large_malloc.c \
-       $(DIR)libft.c \
-       $(DIR)printers.c \
-       $(DIR)show_alloc_mem.c \
-       $(DIR)show_alloc_mem_ex.c \
-       $(DIR)small_free.c \
-       $(DIR)small_malloc.c \
-       $(DIR)small_malloc_norm.c \
-       $(DIR)tiny_free.c \
-       $(DIR)tiny_malloc.c \
-       $(DIR)utils.c
+NAME =		libft_malloc_$(HOSTTYPE).so
+SL_NAME =	libft_malloc.so
+CC =		gcc
+CFLAGS = 	-Wall -Wextra -Werror
 
+INC_DIR =	includes/
+SRC_DIR =	src/
+BIN_DIR =	bin/
 
+SRC_FILES  =   check_pointer.c \
+			   common.c \
+			   large_free.c \
+			   large_malloc.c \
+			   libft.c \
+			   printers.c \
+			   show_alloc_mem.c \
+			   show_alloc_mem_ex.c \
+			   small_free.c \
+			   small_malloc.c \
+			   small_malloc_norm.c \
+			   tiny_free.c \
+			   tiny_malloc.c \
+			   utils.c \
+			   realloc.c
 
-CC = gcc
-CFLAGS = -Wall -Wextra -Werror -I ./includes/
-
-
-OBJ = $(patsubst %.c,%.o,$(SRC))
+SRCS = $(addprefix $(SRC_DIR), $(SRC_FILES))
+BINS = $(addprefix $(BIN_DIR), $(SRC_FILES:.c=.o))
 
 all: $(NAME)
 
-$(NAME): $(OBJ)
-	$(CC) $(CFLAGS) $(SRC) -shared -fPIC -o $(NAME)
-	/bin/rm -f $(LINK)
-	ln -s $(NAME) $(LINK)
+$(NAME): $(BIN_DIR) $(BINS)
+	$(CC) $(CFLAGS) $(BINS) -shared -fPIC -o $(NAME)
+	ln -fs ${NAME} ${SL_NAME}
+
+$(BIN_DIR)%.o: $(SRC_DIR)%.c $(INC_DIR)/ft_malloc.h Makefile
+	$(CC) $(CFLAGS) -I $(INC_DIR) -o $@ -c $<
+
+$(BIN_DIR):
+	mkdir -p bin
 
 clean:
-	/bin/rm -f $(OBJ)
+	rm -rf $(BIN_DIR)
 
 fclean: clean
-	/bin/rm -f $(NAME) $(LINK)
+	rm -f $(NAME)
+	rm -f $(SL_NAME)
 
 re: fclean all
+
+.PHONY: all re run clean fclean

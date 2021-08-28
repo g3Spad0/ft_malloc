@@ -45,10 +45,10 @@ size_t	ft_min(size_t first, size_t second)
 {
 	if (first > second)
 	{
-		return second;
+		return (second);
 	}
 	else
 	{
-		return first;
+		return (first);
 	}
 }
